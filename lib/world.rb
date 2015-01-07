@@ -22,11 +22,15 @@ class World
   def next_generation
     new_generation = []
 
-    (0..grid_size).each do |x|
-      (0..grid_size).each do |y|
+    (0...grid_size).each do |x|
+      (0...grid_size).each do |y|
         cell = find_cell(x,y)
-        # binding.pry
-        # fewer than 2 then it dies
+
+        # if fewerThan2Neighbors?(cell) || ... || ..
+        #   killCell(cell)
+        # else
+        #   resurectIt
+        # end
         if cell && num_of_neighbors?(cell) < 2
           new_generation -= [cell]
         end
@@ -42,6 +46,7 @@ class World
         end
 
         # exactly 3 then lives
+        # cell is nil since it doesn't exist therefore it is dead.
         if !cell && num_of_neighbors?(Cell.new(x, y)) == 3
           new_generation << Cell.new(x, y)
         end
@@ -62,87 +67,23 @@ private
   def num_of_neighbors?(cell)
     num_neighbors = 0
 
-    num_neighbors +=1 if has_upper_left?(cell)
-    num_neighbors +=1 if has_upper?(cell)
-    num_neighbors +=1 if has_upper_right?(cell)
-    num_neighbors +=1 if has_right?(cell)
-    num_neighbors +=1 if has_bottom_right?(cell)
-    num_neighbors +=1 if has_bottom?(cell)
-    num_neighbors +=1 if has_bottom_left?(cell)
-    num_neighbors +=1 if has_left?(cell)
+    neighborOffsets = [
+      [-1,-1],[-1,0],[-1,1],
+      [0,-1],[0,1],
+      [1,-1],[1,0],[1,1]].each do |offset|
+        neighborCell = Cell.new(cell.x + offset[0], cell.y + offset[1])
+        if( neighborCell.x >= 0 && neighborCell.y >= 0)
+          num_neighbors += 1 if isLivingNeighbor?(cell, neighborCell)
+        end
+      end
 
     num_neighbors
   end
 
-  def has_upper_left?(cell)
-    if cell.x >= 1 || cell.y >= 0
-      living_cells.any? do |other_cell|
-        other_cell.x == cell.x - 1 &&
-        other_cell.y == cell.y + 1
-      end
-    end
-  end
-
-  def has_upper?(cell)
-    if cell.x >= 0 || cell.y >= 0
-      living_cells.any? do |other_cell|
-        other_cell.x == cell.x &&
-        other_cell.y == cell.y + 1
-      end
-    end
-  end
-
-  def has_upper_right?(cell)
-    if cell.x >= 0 || cell.y >= 0
-      living_cells.any? do |other_cell|
-        other_cell.x == cell.x + 1 &&
-        other_cell.y == cell.y + 1
-      end
-    end
-  end
-
-  def has_right?(cell)
-    if cell.x >= 0 || cell.y >= 0
-      living_cells.any? do |other_cell|
-        other_cell.x == cell.x + 1 &&
-        other_cell.y == cell.y
-      end
-    end
-  end
-
-  def has_bottom_right?(cell)
-    if cell.x >= 0 || cell.y >= 1
-      living_cells.any? do |other_cell|
-        other_cell.x == cell.x + 1 &&
-        other_cell.y == cell.y - 1
-      end
-    end
-  end
-
-  def has_bottom?(cell)
-    if cell.x >= 0 || cell.y >= 1
-      living_cells.any? do |other_cell|
-        other_cell.x == cell.x &&
-        other_cell.y == cell.y - 1
-      end
-    end
-  end
-
-  def has_bottom_left?(cell)
-    if cell.x >= 1 || cell.y >= 1
-      living_cells.any? do |other_cell|
-        other_cell.x == cell.x - 1 &&
-        other_cell.y == cell.y - 1
-      end
-    end
-  end
-
-  def has_left?(cell)
-    if cell.x >= 1 || cell.y >= 0
-      living_cells.any? do |other_cell|
-        other_cell.x == cell.x - 1 &&
-        other_cell.y == cell.y
-      end
+  def isLivingNeighbor?(cell, neighborCell)
+    living_cells.any? do |other_cell|
+      other_cell.x == neighborCell.x &&
+      other_cell.y == neighborCell.y
     end
   end
 
