@@ -1,4 +1,4 @@
 Conways Game Of Life
 ====================
 
-This was a practice exercise to learn to test driven development
+This was a practice exercise to learn test driven development
