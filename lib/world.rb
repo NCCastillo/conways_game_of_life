@@ -30,9 +30,7 @@ class World
   def next_generation
     (0...grid_size).each do |x|
       (0...grid_size).each do |y|
-        # cell = find_or_generate_cell(x,y)
-        # binding.pry
-        cell = find_cell(x,y)
+        cell = find_or_generate_cell(x,y)
 
         # if fewerThan2Neighbors?(cell) || ... || ..
         #   killCell(cell)
@@ -52,7 +50,7 @@ class World
           cell_dies!(cell)
         end
 
-        if !cell && exactly_three_neighbors?(Cell.new(x,y))
+        if exactly_three_neighbors?(cell)
           cell_lives!(cell)
         end
 
@@ -64,15 +62,11 @@ class World
 
 private
 
-  # def find_or_generate_cell(x,y)
-  #   cell = find_cell(x,y)
+  def find_or_generate_cell(x,y)
+    return Cell.new(x,y,false) unless find_cell(x,y)
 
-  #   if cell.nil?
-  #     cell = Cell.new(x,y)
-  #   end
-
-  #   cell
-  # end
+    find_cell(x,y)
+  end
 
   def find_cell(x,y)
     @living_cells.find do |cell|
@@ -101,19 +95,19 @@ private
   end
 
   def fewer_than_two_neighbors?(cell)
-    cell && num_of_neighbors(cell) < 2
+    cell.alive? && num_of_neighbors(cell) < 2
   end
 
   def fewer_than_two_or_three_neighbors?(cell)
-    cell && num_of_neighbors(cell) >= 2
+    cell.alive? && num_of_neighbors(cell) >= 2
   end
 
   def more_than_three_neighbors?(cell)
-    cell && num_of_neighbors(cell) > 3
+    cell.alive? && num_of_neighbors(cell) > 3
   end
 
   def exactly_three_neighbors?(cell)
-    num_of_neighbors(cell) == 3
+    cell.dead? && num_of_neighbors(cell) == 3
   end
 
   def cell_dies!(cell)
