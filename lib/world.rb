@@ -39,25 +39,23 @@ class World
         # else
         #   resurectIt
         # end
-        if cell && num_of_neighbors(cell) < 2
+
+        if fewer_than_two_neighbors?(cell)
           new_generation -= [cell]
         end
 
-        # 2 or 3 lives
-        if cell && num_of_neighbors(cell) >= 2
+        if fewer_than_two_or_three_neighbors?(cell)
           new_generation << cell
         end
 
-        # more than 3 then it dies
-        if cell && num_of_neighbors(cell) > 3
+        if more_than_three_neighbors?(cell)
           new_generation -= [cell]
         end
 
-        # exactly 3 then lives
-        # cell is nil since it doesn't exist therefore it is dead.
-        if !cell && num_of_neighbors(Cell.new(x, y)) == 3
+        if !cell && exactly_three_neighbors?(Cell.new(x, y))
           new_generation << Cell.new(x, y)
         end
+
       end
     end
 
@@ -92,4 +90,19 @@ private
     end
   end
 
+  def fewer_than_two_neighbors?(cell)
+    cell && num_of_neighbors(cell) < 2
+  end
+
+  def fewer_than_two_or_three_neighbors?(cell)
+    cell && num_of_neighbors(cell) >= 2
+  end
+
+  def more_than_three_neighbors?(cell)
+    cell && num_of_neighbors(cell) > 3
+  end
+
+  def exactly_three_neighbors?(cell)
+    num_of_neighbors(cell) == 3
+  end
 end
