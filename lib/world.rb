@@ -38,22 +38,13 @@ class World
         #   resurectIt
         # end
 
-        if fewer_than_two_neighbors?(cell)
-          cell_dies!(cell)
-        end
-
-        if fewer_than_two_or_three_neighbors?(cell)
+        if exactly_three_neighbors?(cell) || fewer_than_two_or_three_neighbors?(cell)
           cell_lives!(cell)
         end
 
-        if more_than_three_neighbors?(cell)
+        if more_than_three_neighbors?(cell) || fewer_than_two_neighbors?(cell)
           cell_dies!(cell)
         end
-
-        if exactly_three_neighbors?(cell)
-          cell_lives!(cell)
-        end
-
       end
     end
 
