@@ -39,23 +39,23 @@ class World
         # else
         #   resurectIt
         # end
-        if cell && num_of_neighbors?(cell) < 2
+        if cell && num_of_neighbors(cell) < 2
           new_generation -= [cell]
         end
 
         # 2 or 3 lives
-        if cell && num_of_neighbors?(cell) >= 2
+        if cell && num_of_neighbors(cell) >= 2
           new_generation << cell
         end
 
         # more than 3 then it dies
-        if cell && num_of_neighbors?(cell) > 3
+        if cell && num_of_neighbors(cell) > 3
           new_generation -= [cell]
         end
 
         # exactly 3 then lives
         # cell is nil since it doesn't exist therefore it is dead.
-        if !cell && num_of_neighbors?(Cell.new(x, y)) == 3
+        if !cell && num_of_neighbors(Cell.new(x, y)) == 3
           new_generation << Cell.new(x, y)
         end
       end
@@ -72,23 +72,23 @@ private
     end
   end
 
-  def num_of_neighbors?(cell)
+  def num_of_neighbors(cell)
     num_neighbors = 0
 
     NEIGHBOR_OFFSETS.each do |offset|
-      neighborCell = Cell.new(cell.x + offset[0], cell.y + offset[1])
-      if( neighborCell.x >= 0 && neighborCell.y >= 0)
-        num_neighbors += 1 if isLivingNeighbor?(cell, neighborCell)
+      neighbor_cell = Cell.new(cell.x + offset[0], cell.y + offset[1])
+      if neighbor_cell.x >= 0 && neighbor_cell.y >= 0
+        num_neighbors += 1 if is_living_neighbor(cell, neighbor_cell)
       end
     end
 
     num_neighbors
   end
 
-  def isLivingNeighbor?(cell, neighborCell)
+  def is_living_neighbor(cell, neighbor_cell)
     living_cells.any? do |other_cell|
-      other_cell.x == neighborCell.x &&
-      other_cell.y == neighborCell.y
+      other_cell.x == neighbor_cell.x &&
+      other_cell.y == neighbor_cell.y
     end
   end
 
