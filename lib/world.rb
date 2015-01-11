@@ -9,11 +9,7 @@
 require 'pry'
 class World
 
-  NEIGHBOR_OFFSETS = [
-    [-1,-1],[-1,0],[-1,1],
-    [0,-1],[0,1],
-    [1,-1],[1,0],[1,1]
-  ]
+  NEIGHBOR_OFFSETS = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
 
   attr_reader :grid_size
 
@@ -32,12 +28,6 @@ class World
       (0...grid_size).each do |y|
         cell = find_or_generate_cell(x,y)
 
-        # if fewerThan2Neighbors?(cell) || ... || ..
-        #   killCell(cell)
-        # else
-        #   resurectIt
-        # end
-
         if exactly_three_neighbors?(cell) || fewer_than_two_or_three_neighbors?(cell)
           cell_lives!(cell)
         end
@@ -45,6 +35,7 @@ class World
         if more_than_three_neighbors?(cell) || fewer_than_two_neighbors?(cell)
           cell_dies!(cell)
         end
+
       end
     end
 
