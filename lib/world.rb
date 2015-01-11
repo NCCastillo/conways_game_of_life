@@ -17,10 +17,10 @@ class World
 
   attr_reader :grid_size
 
-
   def initialize(grid_size, living_cells)
     @grid_size = grid_size
     @living_cells = living_cells
+    @new_generation = []
   end
 
   def living_cells
@@ -28,10 +28,10 @@ class World
   end
 
   def next_generation
-    new_generation = []
-
     (0...grid_size).each do |x|
       (0...grid_size).each do |y|
+        # cell = find_or_generate_cell(x,y)
+        # binding.pry
         cell = find_cell(x,y)
 
         # if fewerThan2Neighbors?(cell) || ... || ..
@@ -41,28 +41,38 @@ class World
         # end
 
         if fewer_than_two_neighbors?(cell)
-          new_generation -= [cell]
+          cell_dies!(cell)
         end
 
         if fewer_than_two_or_three_neighbors?(cell)
-          new_generation << cell
+          cell_lives!(cell)
         end
 
         if more_than_three_neighbors?(cell)
-          new_generation -= [cell]
+          cell_dies!(cell)
         end
 
-        if !cell && exactly_three_neighbors?(Cell.new(x, y))
-          new_generation << Cell.new(x, y)
+        if !cell && exactly_three_neighbors?(Cell.new(x,y))
+          cell_lives!(cell)
         end
 
       end
     end
 
-    @living_cells = new_generation
+    @living_cells = @new_generation
   end
 
 private
+
+  # def find_or_generate_cell(x,y)
+  #   cell = find_cell(x,y)
+
+  #   if cell.nil?
+  #     cell = Cell.new(x,y)
+  #   end
+
+  #   cell
+  # end
 
   def find_cell(x,y)
     @living_cells.find do |cell|
@@ -104,5 +114,13 @@ private
 
   def exactly_three_neighbors?(cell)
     num_of_neighbors(cell) == 3
+  end
+
+  def cell_dies!(cell)
+    @new_generation -= [cell]
+  end
+
+  def cell_lives!(cell)
+    @new_generation << cell
   end
 end
