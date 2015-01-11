@@ -8,7 +8,15 @@
 # a live cell, as if by reproduction.
 require 'pry'
 class World
+
+  NEIGHBOR_OFFSETS = [
+    [-1,-1],[-1,0],[-1,1],
+    [0,-1],[0,1],
+    [1,-1],[1,0],[1,1]
+  ]
+
   attr_reader :grid_size
+
 
   def initialize(grid_size, living_cells)
     @grid_size = grid_size
@@ -67,15 +75,12 @@ private
   def num_of_neighbors?(cell)
     num_neighbors = 0
 
-    neighborOffsets = [
-      [-1,-1],[-1,0],[-1,1],
-      [0,-1],[0,1],
-      [1,-1],[1,0],[1,1]].each do |offset|
-        neighborCell = Cell.new(cell.x + offset[0], cell.y + offset[1])
-        if( neighborCell.x >= 0 && neighborCell.y >= 0)
-          num_neighbors += 1 if isLivingNeighbor?(cell, neighborCell)
-        end
+    NEIGHBOR_OFFSETS.each do |offset|
+      neighborCell = Cell.new(cell.x + offset[0], cell.y + offset[1])
+      if( neighborCell.x >= 0 && neighborCell.y >= 0)
+        num_neighbors += 1 if isLivingNeighbor?(cell, neighborCell)
       end
+    end
 
     num_neighbors
   end
