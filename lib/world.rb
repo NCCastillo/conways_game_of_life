@@ -1,12 +1,5 @@
-# Any live cell with fewer than two live neighbours dies,
-# as if caused by under-population.
-# Any live cell with two or three live neighbours lives on
-# to the next generation.
-# Any live cell with more than three live neighbours dies,
-# as if by overcrowding.
-# Any dead cell with exactly three live neighbours becomes
-# a live cell, as if by reproduction.
 require 'pry'
+
 class World
 
   NEIGHBOR_OFFSETS = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
@@ -16,7 +9,6 @@ class World
   def initialize(grid_size, living_cells)
     @grid_size = grid_size
     @living_cells = living_cells
-    @new_generation = []
   end
 
   def living_cells
@@ -24,45 +16,39 @@ class World
   end
 
   def next_generation
+    new_generation = []
+
     (0...grid_size).each do |x|
       (0...grid_size).each do |y|
-        cell = find_or_generate_cell(x,y)
+        is_living_cell = has_living_cell?(x, y)
+        neighbor_count = num_of_neighbors(x, y)
 
-        if exactly_three_neighbors?(cell) || fewer_than_two_or_three_neighbors?(cell)
-          cell_lives!(cell)
-        end
-
-        if more_than_three_neighbors?(cell) || fewer_than_two_neighbors?(cell)
-          cell_dies!(cell)
+        if (is_living_cell && neighbor_count.between?(2,3)) ||
+          (!is_living_cell && neighbor_count == 3)
+          new_generation << Cell.new(x,y)
         end
 
       end
     end
 
-    @living_cells = @new_generation
+    @living_cells = new_generation
   end
 
 private
 
-  def find_or_generate_cell(x,y)
-    return Cell.new(x,y,false) unless find_cell(x,y)
-
-    find_cell(x,y)
-  end
-
-  def find_cell(x,y)
+  def has_living_cell?(x,y)
     @living_cells.find do |cell|
       cell.x == x && cell.y == y
     end
   end
 
-  def num_of_neighbors(cell)
+  def num_of_neighbors(x,y)
     num_neighbors = 0
 
     NEIGHBOR_OFFSETS.each do |offset|
-      neighbor_cell = Cell.new(cell.x + offset[0], cell.y + offset[1])
+      neighbor_cell = Cell.new(x + offset[0], y + offset[1])
       if neighbor_cell.x >= 0 && neighbor_cell.y >= 0
-        num_neighbors += 1 if is_living_neighbor(cell, neighbor_cell)
+        num_neighbors += 1 if is_living_neighbor(Cell.new(x,y), neighbor_cell)
       end
     end
 
@@ -76,27 +62,4 @@ private
     end
   end
 
-  def fewer_than_two_neighbors?(cell)
-    cell.alive? && num_of_neighbors(cell) < 2
-  end
-
-  def fewer_than_two_or_three_neighbors?(cell)
-    cell.alive? && num_of_neighbors(cell) >= 2
-  end
-
-  def more_than_three_neighbors?(cell)
-    cell.alive? && num_of_neighbors(cell) > 3
-  end
-
-  def exactly_three_neighbors?(cell)
-    cell.dead? && num_of_neighbors(cell) == 3
-  end
-
-  def cell_dies!(cell)
-    @new_generation -= [cell]
-  end
-
-  def cell_lives!(cell)
-    @new_generation << cell
-  end
 end
